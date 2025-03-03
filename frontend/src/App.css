@@ -1,7 +1,5 @@
 .bg {
-    background-image: url('./assets/images/bg2.avif');
-    background-repeat: no-repeat;    
-    background-size: cover;
+    background: linear-gradient(135deg, #ffffff, #67a762);
     position: fixed; 
     top: 0;
     left: 0;
@@ -9,27 +7,25 @@
     height: 100%; 
     background-position: center;    
     z-index: -1; 
-
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #ffffff;
-
 }
 
 .logo {
-    font-family: 'Imperial Script', serif;
-    font-size: 3rem;
-    font-weight: 600;
-    color: #8a732f;
+    font-family: "Ribeye Marrow", serif;
+    font-family: "Monoton", sans-serif;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #247b09;
     margin-bottom: 1rem;
 }
 
 .sign-up-container {
-    background: #f0e7ce;
+    background: #add2a3;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -64,14 +60,14 @@ input {
 }
 
 input:focus {
-    border-color: #007bff;
+    border-color: #448331;
     outline: none;
 }
 
-button {
-    margin-top: 15px;
+.signup-button {
+    margin-top: 10px;
     padding: 10px;
-    background: #a88d3f;
+    background: #448331;
     color: white;
     font-size: 16px;
     border: none;
@@ -80,7 +76,7 @@ button {
     transition: background 0.3s ease;
 }
 
-button:hover {
-    background: #ead8b8;
+.signup-button:hover {
+    background: #316421;
 }
 

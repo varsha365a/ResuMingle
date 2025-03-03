@@ -19,7 +19,7 @@ const Login = () => {
         })
         .then(response => {
             if(response.data.status){
-                navigate('/')
+                navigate('/upload')
             }
         })
         .catch((error) => {
@@ -53,9 +53,9 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Log In</button><br></br>
+                <button className="signup-button" type="submit">Log In</button><br></br>
                 <Link to="/forgotPassword">Forgot Password</Link>
-                <p>Don't have an account already ? <Link to="/signup">Sign Up Here</Link></p>
+                <p>Don't have an account? <Link to="/signup">Sign Up Here</Link></p>
             </form>
         </div>
         </div>

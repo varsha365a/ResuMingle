@@ -30,51 +30,51 @@ router.post('/login', async (req, res) => {
         return res.json({ message: "Incorrect password" });
     }
 
-    const token = jwt.sign({ username: user.username }, process.env.KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.KEY, { expiresIn: '1h' });
     res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'None', secure: true });
     return res.json({ status: true, message: "User logged in successfully" });
 });
 
 router.post('/forgot-password', async (req, res) => {
-    const { email } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.json({ message: "User does not exist" });
-        }
-
-        const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '5m' });
-
-        //Nodemailer code
-        var transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'catjasmine810@gmail.com',
-              pass: 'jquq lsya owng twho'
-            }
-          });
-          
-          var mailOptions = {
-            from: 'catjasmine810@gmail.com',
-            to: email,
-            subject: 'Reset password Link',
-            text: `http://localhost:5173/resetPassword/${token}`
-          };
-          
-          transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-              return res.json({ message: "Error sending message" });
-            } else {
-              return res.json ({ status: true, message: 'Email sent' });
-            }
-          });
-
-    }catch (error) {
-       alert(error);
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.json({ message: "User does not exist" });
     }
+
+    const token = jwt.sign({ id: user._id }, process.env.KEY, { expiresIn: '5m' });
+
+    //Nodemailer code
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'catjasmine810@gmail.com',
+        pass: 'jquq lsya owng twho'
+      }
+    });
+      
+    var mailOptions = {
+      from: 'catjasmine810@gmail.com',
+      to: email,
+      subject: 'Reset password Link',
+      text: `http://localhost:5173/resetPassword/${token}`
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        return res.json({ message: "Error sending message" });
+      } else {
+        return res.json ({ status: true, message: 'Email sent' });
+      }
+    });
+
+  }catch (error) {
+      alert(error);
+  }
 });
 
-router.post('/resetPassword/:token', async(req, res) => {
+  router.post('/resetPassword/:token', async(req, res) => {
     const { token } = req.params;
     const { password } = req.body;
     try {

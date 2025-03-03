@@ -60,7 +60,7 @@ const Signup = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Sign Up</button>
+                <button className="signup-button" type="submit">Sign Up</button>
                 <p>Have an account already? <Link to="/login">Login Here</Link></p>
             </form>
         </div>
