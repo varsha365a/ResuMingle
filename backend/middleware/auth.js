@@ -8,12 +8,22 @@ export const authenticateUser = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.KEY);
-        console.log("Decoded Token in Middleware:", decoded); // Log this
-        req.user = decoded; // Attach user info
+        req.user = decoded; 
         next();
     } catch (error) {
         return res.status(403).json({ error: "Invalid token" });
     }
 };
 
+export const authenticateMember = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+    
+    if (req.user.role !== "member") {
+        return res.status(403).json({ error: "Access denied: Members only" });
+    }
+    
+    next();
+};
 

@@ -21,16 +21,24 @@ app.use(cookieParser());
 app.use('/auth', UserRouter);
 app.use('/api/posts', PostRouter);
 
+// Get the directory name in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-mongoose.connect('mongodb://127.0.0.1:27017/authentication')
+mongoose.connect('mongodb://127.0.0.1:27017/resumingle')
     .then(() => console.log('MongoDB connected'))
     .catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+});
+
+app.get("/uploads/:filename", (req, res) => {
+    const filePath = path.join(__dirname, "uploads", req.params.filename);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline");
+    res.sendFile(filePath);
 });

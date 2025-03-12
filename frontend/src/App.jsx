@@ -8,6 +8,8 @@ import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 import Posts from "./Posts";
 import Home from "./Home";
+import AdminDashboard from "./AdminDashboard";
+import JobCompatibility from "./JobCompatibility"; 
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/resetPassword/:token" element={<ResetPassword />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/posts" element={<Posts />} />
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/job-compatibility/:postId" element={<JobCompatibility />} />
       </Routes>
     </BrowserRouter>
   );

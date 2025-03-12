@@ -6,33 +6,44 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 
 router.post('/signup', async (req, res) => {
-    const { username, email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (user) {
-        return res.json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
-    await newUser.save();
-    return res.json({ status: true, message: "User registered successfully" });
+  const { username, email, company, password } = req.body;
+  if (await User.findOne({ email })) return res.json({ message: "User already exists" });
+  const newUser = new User({ username, email, company, password, role: "user" });
+  await newUser.save();  
+  return res.json({ status: true, message: "User registered successfully" });
 });
 
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+  const { email, password, company } = req.body;
+  try {
+    const user = await User.findOne({ email, company });
+
     if (!user) {
-        return res.json({ message: "User does not exist" });
+      console.log("User not found for email:", email, "and company:", company);
+      return res.json({ status: false, message: "User does not exist" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
+    
+    console.log("Password Match:", validPassword);
+
     if (!validPassword) {
-        return res.json({ message: "Incorrect password" });
+      return res.json({ status: false, message: "Incorrect password" });
     }
 
-    const token = jwt.sign({ id: user._id, username: user.username }, process.env.KEY, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user._id, username: user.username, company: user.company, role: user.role },
+      process.env.KEY,
+      { expiresIn: '1h' }
+    );
+
     res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'None', secure: true });
-    return res.json({ status: true, message: "User logged in successfully" });
+
+    return res.json({ status: true, message: "User logged in successfully", role: user.role });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({ status: false, message: "Internal server error" });
+  }
 });
 
 router.post('/forgot-password', async (req, res) => {
@@ -49,17 +60,17 @@ router.post('/forgot-password', async (req, res) => {
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'catjasmine810@gmail.com',
-        pass: 'jquq lsya owng twho'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
       }
     });
       
     var mailOptions = {
-      from: 'catjasmine810@gmail.com',
+      from: process.env.EMAIL_USER,
       to: email,
       subject: 'Reset password Link',
       text: `http://localhost:5173/resetPassword/${token}`
-    };
+    };  
     
     transporter.sendMail(mailOptions, function(error, info){
       if (error) {
@@ -90,26 +101,26 @@ router.post('/forgot-password', async (req, res) => {
   });
 
   const verifyUser = async (req, res, next) => {
-    try{
-    const token = req.cookies.token;
-    if (!token) {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
         return res.json({ status: false, message: "Access denied" });
-    }
-    const decoded =await jwt.verify(token, process.env.KEY);
-    next()
-
+      }
+      const decoded = await jwt.verify(token, process.env.KEY);
+      req.user = decoded;
+      next();
     } catch (error) {
-      return res.json(error);
+      return res.json({ status: false, message: "Invalid token" });
     }
   };
-
-  router.get('/verify',verifyUser, (req, res) => {
-    return res.json({ status: true, message: "User verified"})
+  
+  router.get('/verify', verifyUser, (req, res) => {
+    return res.json({ status: true, message: "User verified" });
   });
-
+  
   router.get('/logout', (req, res) => {
     res.clearCookie('token');
-    return res.json({ status: true })
-  })
+    return res.json({ status: true, message: "User logged out successfully" });
+  });
 
 export { router as UserRouter };

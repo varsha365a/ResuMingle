@@ -170,12 +170,13 @@ button.btn:hover {
     align-items: center;
     padding: 15px;
     border-bottom: 1px solid #eee;
-    background: #688491;
+    background: #93D0D4;
 }
 
 .post-username {
     font-weight: 600;
     font-size: 16px;
+    text-transform: capitalize;
     color: #ffffff;
 }
 
@@ -186,23 +187,45 @@ button.btn:hover {
 
 .post-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content:flex-end;
     padding: 15px;
     border-top: 1px solid #eee;
-    background: #688491;
+    background: #93D0D4;
+}
+
+.like-btn{
+    justify-content: flex-start;
+    float: left;
+}
+
+.post-btn {
+    background-color: #93d0d4;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border: none;
 }
 
 .post-actions button {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 28px;
     transition: 0.3s;
 }
 
 .post-actions button:hover {
-    color: rgb(198, 241, 243);
     transform: scale(1.2);
+}
+
+.no-posts {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: gray;
+    margin-top: 20px;
 }
 
 @keyframes fadeIn {

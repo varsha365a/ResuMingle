@@ -1,0 +1,107 @@
+/* Full-page vibrant background */
+.compatibility-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  /* Page title with animation */
+  .page-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-transform: uppercase;
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  /* Shimmer effect for loading text */
+  .loading-animation {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: #ffffff;
+  }
+  
+  .shimmer-text {
+    background: linear-gradient(to right, #fff 20%, #b3c6ff 50%, #fff 80%);
+    background-size: 200% auto;
+    animation: shimmer 1.5s linear infinite;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  
+  /* Compatibility result section */
+  .result-section {
+    margin-top: 20px;
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  /* Score box with glow effect */
+  .score-box {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Progress bar with animation */
+  .progress-bar {
+    width: 80%;
+    background: rgba(255, 255, 255, 0.2);
+    height: 30px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 20px auto;
+  }
+  
+  .progress {
+    height: 100%;
+    background: linear-gradient(to right, #00ff88, #00d4ff);
+    transition: width 1.5s ease-in-out;
+  }
+  
+  /* Compatibility score text */
+  .score-text {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  /* Emoji animation */
+  .emoji {
+    font-size: 50px;
+    margin: 10px 0;
+    animation: bounce 1.5s infinite;
+  }
+  
+  /* Bounce effect for emoji */
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  /* Message text with smooth appearance */
+  .message {
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 10px;
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  /* Fade-in effect for text */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
