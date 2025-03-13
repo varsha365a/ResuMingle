@@ -11,6 +11,7 @@ const JobCompatibility = () => {
   const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("🤔");
   const [confetti, setConfetti] = useState(false);
+  const [progressColor, setProgressColor] = useState("#ffcc00");
 
   useEffect(() => {
     Axios.get(`http://localhost:3000/api/posts/${postId}/compatibility`)
@@ -20,7 +21,7 @@ const JobCompatibility = () => {
           setLoading(false);
           determineMessage(res.data.score);
           if (res.data.score >= 80) {
-            setConfetti(true); // 🎉 Confetti if score is high
+            setConfetti(true); // 🎉 Confetti for top matches
           }
         }, 3000);
       })
@@ -30,16 +31,20 @@ const JobCompatibility = () => {
   const determineMessage = (score) => {
     if (score >= 80) {
       setMessage("🚀 You're an **excellent match**! This job is perfect for you!");
-      setEmoji("🎉");
+      setEmoji("🎯");
+      setProgressColor("#00ff88");
     } else if (score >= 60) {
       setMessage("🔥 You're a **good match**! You have most of the required skills.");
-      setEmoji("😃");
+      setEmoji("💪");
+      setProgressColor("#ffcc00");
     } else if (score >= 40) {
       setMessage("⚡ You're a **decent match**! A little improvement can boost your chances.");
-      setEmoji("😊");
+      setEmoji("🙂");
+      setProgressColor("#ff8c00");
     } else {
       setMessage("📚 You need to **improve your skills** for this role.");
-      setEmoji("😕");
+      setEmoji("📖");
+      setProgressColor("#ff0040");
     }
   };
 
@@ -47,9 +52,10 @@ const JobCompatibility = () => {
     <div className="compatibility-container">
       {confetti && <Confetti />}
       <h1 className="page-title">Job Compatibility Analysis</h1>
+
       {loading ? (
         <div className="loading-animation">
-          <div className="shimmer-text">Calculating Compatibility...</div>
+          <div className="shimmer-text">Analyzing Your Fit...</div>
         </div>
       ) : (
         <div className="result-section">
@@ -58,7 +64,7 @@ const JobCompatibility = () => {
             <div className="progress-bar">
               <div
                 className="progress"
-                style={{ width: `${compatibilityScore}%` }}
+                style={{ width: `${compatibilityScore}%`, background: progressColor }}
               ></div>
             </div>
             <p className="score-text">{compatibilityScore}%</p>

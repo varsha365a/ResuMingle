@@ -87,14 +87,22 @@ const Posts = () => {
               </div>
               <div className="post-actions">
                 <button onClick={() => handleJobCompatibility(post._id)}>
-                  Job Compatibility
+                  🚀 Job Compatibility
                 </button>
+
                 <button className="like-btn" onClick={() => handleLike(post._id)}>
-                  <FcLike /> {post.likes?.length || 0}
+                   <FcLike /> {post.likes?.length || 0}
                 </button>
-                <button><FaRegCommentDots /></button>
-                <button><HiDotsVertical /></button>
+
+                <button className="comment-btn">
+                   <FaRegCommentDots />Comments
+                </button>
+
+                <button className="options-btn">
+                   <HiDotsVertical />
+                </button>
               </div>
+
             </div>
           ))
         )}

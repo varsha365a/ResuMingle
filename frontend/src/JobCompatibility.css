@@ -1,107 +1,119 @@
-/* Full-page vibrant background */
+/* Full-page glassmorphism background */
 .compatibility-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: white;
-    font-family: "Poppins", sans-serif;
-  }
-  
-  /* Page title with animation */
-  .page-title {
-    font-size: 32px;
-    font-weight: bold;
-    text-transform: uppercase;
-    animation: fadeIn 1.5s ease-in-out;
-  }
-  
-  /* Shimmer effect for loading text */
-  .loading-animation {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    color: #ffffff;
-  }
-  
-  .shimmer-text {
-    background: linear-gradient(to right, #fff 20%, #b3c6ff 50%, #fff 80%);
-    background-size: 200% auto;
-    animation: shimmer 1.5s linear infinite;
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 5px;
-  }
-  
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  
-  /* Compatibility result section */
-  .result-section {
-    margin-top: 20px;
-    text-align: center;
-    animation: fadeIn 1.5s ease-in-out;
-  }
-  
-  /* Score box with glow effect */
-  .score-box {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
-  }
-  
-  /* Progress bar with animation */
-  .progress-bar {
-    width: 80%;
-    background: rgba(255, 255, 255, 0.2);
-    height: 30px;
-    border-radius: 20px;
-    overflow: hidden;
-    margin: 20px auto;
-  }
-  
-  .progress {
-    height: 100%;
-    background: linear-gradient(to right, #00ff88, #00d4ff);
-    transition: width 1.5s ease-in-out;
-  }
-  
-  /* Compatibility score text */
-  .score-text {
-    font-size: 30px;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  /* Emoji animation */
-  .emoji {
-    font-size: 50px;
-    margin: 10px 0;
-    animation: bounce 1.5s infinite;
-  }
-  
-  /* Bounce effect for emoji */
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  /* Message text with smooth appearance */
-  .message {
-    font-size: 20px;
-    font-weight: 500;
-    margin-top: 10px;
-    animation: fadeIn 1.5s ease-in-out;
-  }
-  
-  /* Fade-in effect for text */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #121212, #1e3c72);
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Page title with modern styling */
+.page-title {
+  font-size: 36px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  animation: fadeIn 1s ease-in-out;
+  color: #50abbd;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Glass effect for result box */
+.result-section {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Score box with glowing effect */
+.score-box {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 0px 20px rgba(0, 212, 255, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.score-box:hover {
+  transform: scale(1.05);
+}
+
+/* Gradient progress bar */
+.progress-bar {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  height: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(to right, #ff0080, #ff8c00, #ffcc00);
+  transition: width 1.5s ease-in-out;
+}
+
+/* Compatibility score text */
+.score-text {
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #ffcc00;
+  text-shadow: 0px 0px 10px rgba(255, 204, 0, 0.8);
+}
+
+/* Emoji animation */
+.emoji {
+  font-size: 60px;
+  margin: 15px 0;
+  animation: bounce 1.5s infinite;
+}
+
+/* Message text with smooth fade-in */
+.message {
+  font-size: 22px;
+  font-weight: 500;
+  margin-top: 15px;
+  animation: fadeIn 1.5s ease-in-out;
+  color: #ffffff;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+}
+
+/* Shimmer effect for loading */
+.shimmer-text {
+  background: linear-gradient(to right, #1e3c72 20%, #1e3c72 50%, #7d94d8 80%);
+  background-size: 200% auto;
+  animation: shimmer 1.5s linear infinite;
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 5px;
+  font-size: 24px;
+}
+
+/* Keyframe animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -185,40 +185,81 @@ button.btn:hover {
     font-size: 14px;
 }
 
+/* Post actions */
+
+/* Flex container for buttons */
 .post-actions {
     display: flex;
-    justify-content:flex-end;
-    padding: 15px;
-    border-top: 1px solid #eee;
-    background: #93D0D4;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1); /* Subtle background */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease-in-out;
 }
 
-.like-btn{
-    justify-content: flex-start;
-    float: left;
-}
-
-.post-btn {
-    background-color: #93d0d4;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    border: none;
-}
-
+/* General button styling */
 .post-actions button {
-    background: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #93D0D4, #93D0D4);
     border: none;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 28px;
-    transition: 0.3s;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 10px rgba(188, 206, 221, 0.4);
 }
 
+/* Button hover effects */
 .post-actions button:hover {
-    transform: scale(1.2);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(104, 187, 196, 0.6);
 }
+
+/* Individual button styles */
+.like-btn {
+    background: linear-gradient(135deg, #009fff, #ecf7ff);
+}
+
+.like-btn:hover {
+    box-shadow: 0 4px 12px rgba(139, 207, 208, 0.6);
+}
+
+.comment-btn {
+    background: linear-gradient(135deg, #00d4ff, #008cff);
+}
+
+.comment-btn:hover {
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.6);
+}
+
+.options-btn {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+.options-btn:hover {
+    box-shadow: 0 4px 12px rgba(106, 17, 203, 0.6);
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .post-actions {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+}
+
+
+/* post actions end */
 
 .no-posts {
     text-align: center;
