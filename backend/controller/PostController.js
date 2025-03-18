@@ -1,4 +1,5 @@
 import { Post } from "../models/Post.js";
+import { User } from "../models/User.js";
 
 export const createPost = async (req, res) => {
     try {
@@ -103,25 +104,55 @@ export const checkJobCompatibility = async (req, res) => {
             "Cybersecurity", "Performance Optimization", "CI/CD", "Software Testing"
         ];
 
-        const resumeText = post.resumeText.toLowerCase();
-        let matches = 0;
+        // Normalize the text: remove extra spaces, new lines, and convert to lowercase
+        const cleanText = post.resumeText
+            .toLowerCase()
+            .replace(/[^a-zA-Z0-9\s.\-+#/]/g, " ") // Remove special characters
+            .replace(/\s+/g, " ") // Remove extra spaces and newlines
+            .trim();
+
         let matchedKeywords = new Set();
 
         jobKeywords.forEach((keyword) => {
-            const safeKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
+            const safeKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             const regex = new RegExp(`\\b${safeKeyword.toLowerCase()}\\b`, "g");
-            const found = resumeText.match(regex);
-            if (found) {
-                matches += found.length;
+
+            if (cleanText.match(regex)) {
+                matchedKeywords.add(keyword);
             }
         });
-            
-        const uniqueResumeWords = new Set(resumeText.split(/\s+/)).size;
-        const compatibilityScore = Math.round((matches / uniqueResumeWords) * 100);
 
-        res.json({ score: compatibilityScore, matchedKeywords: Array.from(matchedKeywords) });
+        const compatibilityScore = Math.round((matchedKeywords.size / jobKeywords.length) * 100);
+
+        res.json({
+            score: compatibilityScore,
+            matchedKeywords: Array.from(matchedKeywords)
+        });
+
     } catch (error) {
         console.error("Error checking job compatibility:", error);
         res.status(500).json({ error: "Failed to check job compatibility" });
     }
-};     
+};
+
+export const saveCompatibilityScore = async (req, res) => {
+    try {
+        const { postId, score } = req.body;
+        const userId = req.user.id; // Get user ID from auth middleware
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // Store only one job compatibility score (overwrite previous score)
+        user.jobCompatibilityScore = { postId, score, date: Date.now() };
+        await user.save();
+
+        res.status(200).json({ message: "Score saved successfully!" });
+    } catch (error) {
+        console.error("Error saving compatibility score:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+

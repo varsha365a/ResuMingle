@@ -4,6 +4,8 @@ const router = express.Router();
 import { User } from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import { saveCompatibilityScore} from "../controller/PostController.js";
+import { authenticateUser } from "../middleware/auth.js";
 
 router.post('/signup', async (req, res) => {
   const { username, email, company, password } = req.body;
@@ -37,7 +39,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'None', secure: true });
+    res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'lax', secure: true });
 
     return res.json({ status: true, message: "User logged in successfully", role: user.role });
   } catch (error) {
@@ -117,6 +119,8 @@ router.post('/forgot-password', async (req, res) => {
   router.get('/verify', verifyUser, (req, res) => {
     return res.json({ status: true, message: "User verified" });
   });
+
+  router.post("/save-compatibility", authenticateUser, saveCompatibilityScore);
   
   router.get('/logout', (req, res) => {
     res.clearCookie('token');

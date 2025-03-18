@@ -13,6 +13,14 @@ const postSchema = new mongoose.Schema({
     pdfUrl: {
         type: String
     },
+    company: {
+        type: String,  // Add company field
+        required: true
+    },
+    role: {
+        type: String,  // Add role field
+        required: true
+    },
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

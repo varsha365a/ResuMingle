@@ -14,19 +14,44 @@ const JobCompatibility = () => {
   const [progressColor, setProgressColor] = useState("#ffcc00");
 
   useEffect(() => {
-    Axios.get(`http://localhost:3000/api/posts/${postId}/compatibility`)
-      .then((res) => {
-        setTimeout(() => {
-          setCompatibilityScore(res.data.score);
-          setLoading(false);
-          determineMessage(res.data.score);
-          if (res.data.score >= 80) {
-            setConfetti(true); // 🎉 Confetti for top matches
-          }
-        }, 3000);
-      })
-      .catch((err) => console.error("Error fetching compatibility score:", err));
-  }, [postId]);
+    const fetchCompatibilityScore = async () => {
+        try {
+            const res = await Axios.get(`http://localhost:3000/api/posts/${postId}/compatibility`);
+            const score = res.data.score;
+
+            // Add a small delay to simulate processing
+            setTimeout(() => {
+                setCompatibilityScore(score);
+                setLoading(false);
+                determineMessage(score);
+                
+                if (score >= 80) {
+                    setConfetti(true);
+                }
+
+                // 🔹 Automatically save the score in the user's database
+                saveScoreToDB(postId, score);
+            }, 2000);
+        } catch (err) {
+            console.error("Error fetching compatibility score:", err);
+            setLoading(false);
+        }
+    };
+
+    fetchCompatibilityScore();
+}, [postId]);
+
+  const saveScoreToDB = async (postId, score) => {
+      try {
+          await Axios.post("http://localhost:3000/auth/save-compatibility", 
+              { postId, score }, 
+              { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          );
+          console.log("✅ Score saved successfully!");
+      } catch (err) {
+          console.error("⚠️ Error saving score:", err);
+      }
+  };
 
   const determineMessage = (score) => {
     if (score >= 80) {
@@ -37,7 +62,7 @@ const JobCompatibility = () => {
       setMessage("🔥 You're a **good match**! You have most of the required skills.");
       setEmoji("💪");
       setProgressColor("#ffcc00");
-    } else if (score >= 40) {
+    } else if (score >= 30) {
       setMessage("⚡ You're a **decent match**! A little improvement can boost your chances.");
       setEmoji("🙂");
       setProgressColor("#ff8c00");

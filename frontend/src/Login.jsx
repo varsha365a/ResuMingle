@@ -10,7 +10,7 @@ const Login = () => {
   const [company, setCompany] = useState("");
   const [error, setError] = useState(""); // State for error messages
 
-  const companyOptions = ["Google", "Microsoft", "Amazon", "Facebook", "Apple"]; // Example list
+  const companyOptions = ["Amrita Pest Control Pvt. Ltd.", "ID Tag Systems", "Wipro", "TCS"]; 
 
   const navigate = useNavigate();
 

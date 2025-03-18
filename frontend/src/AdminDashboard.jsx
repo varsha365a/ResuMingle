@@ -5,11 +5,18 @@ import { AppBar, Toolbar, Typography, Table, TableBody, TableCell, TableContaine
 const AdminDashboard = () => {
     const [resumes, setResumes] = useState([]);
 
+    const handleLogout = () => {
+        localStorage.removeItem("token"); 
+        window.location.href = "/login"; 
+    };
+
     useEffect(() => {
-        axios.get("http://localhost:3000/resumes")
+        axios.get("http://localhost:3000/admin/resumes", {
+            withCredentials: true, 
+        })
         .then(response => setResumes(response.data))
-            .catch(error => console.error(error));
-    }, []);
+        .catch(error => console.error(error));
+    }, []);    
 
     return (
         <div>
@@ -18,7 +25,7 @@ const AdminDashboard = () => {
                     <Typography variant="h6" style={{ flexGrow: 1 }}>
                         Admin Dashboard - Resume Management
                     </Typography>
-                    <Button color="inherit">Logout</Button>
+                    <Button color="inherit" onClick={ handleLogout }>Logout</Button>
                 </Toolbar>
             </AppBar>
 
@@ -29,19 +36,29 @@ const AdminDashboard = () => {
                             <TableCell style={{ color: "white" }}>Name</TableCell>
                             <TableCell style={{ color: "white" }}>Email</TableCell>
                             <TableCell style={{ color: "white" }}>Company</TableCell>
+                            <TableCell style={{ color: "white" }}>Role</TableCell>
                             <TableCell style={{ color: "white" }}>Resume</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {resumes.map((resume, index) => (
                             <TableRow key={index}>
-                                <TableCell>{resume.name}</TableCell>
-                                <TableCell>{resume.email}</TableCell>
+                                <TableCell>{resume.userId?.username}</TableCell>
+                                <TableCell>{resume.userId?.email}</TableCell>
                                 <TableCell>{resume.company}</TableCell>
+                                <TableCell>{resume.role}</TableCell>
                                 <TableCell>
-                                    <Button variant="contained" color="primary" onClick={() => window.open(resume.resumeLink, "_blank")}>
-                                        View Resume
-                                    </Button>
+
+                                <Button 
+                                    variant="contained" 
+                                    color="primary" 
+                                    onClick={() => {
+                                        window.open(`http://localhost:3000/uploads/${resume.pdfUrl}`, "_blank");
+                                    }}
+                                >
+                                    View Resume
+                                </Button>
+
                                 </TableCell>
                             </TableRow>
                         ))}

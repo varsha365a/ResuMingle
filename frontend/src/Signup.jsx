@@ -8,7 +8,7 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [company, setCompany] = useState("");
-    const companyOptions = ["Google", "Microsoft", "Amazon", "Facebook", "Apple"]; // Example list
+    const companyOptions = ["Amrita Pest Control Pvt. Ltd.", "ID Tag Systems", "Wipro", "TCS"]; 
 
     const navigate = useNavigate();
 

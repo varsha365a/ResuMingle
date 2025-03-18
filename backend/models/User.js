@@ -24,6 +24,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         enum: ["user", "member"],
         default: "user"
+    },
+    jobCompatibilityScores: {
+        postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+        score: { type: Number, required: true },
+        date: { type: Date, default: Date.now }
     }
 })
 

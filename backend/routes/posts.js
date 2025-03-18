@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import { createPost, getAllPosts, likePost, addComment, checkJobCompatibility } from "../controller/PostController.js";
 import { authenticateUser, authenticateMember } from "../middleware/auth.js";
+import { Post } from "../models/Post.js";    
 
 const router = express.Router();
 
@@ -21,21 +22,32 @@ const upload = multer({ storage });
 // Serve uploaded PDFs correctly
 router.use('/uploads', express.static('uploads'));
 
+// Upload Resume (with company & role)
 router.post("/", authenticateUser, upload.single('pdf'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: "No file uploaded" });
         }
 
+        const { text, company, role } = req.body;
+
+        if (!company || !role) {
+            return res.status(400).json({ error: "Company and Role are required" });
+        }
+
         const pdfUrl = req.file.filename;
 
-        // Ensure `req.body.text` exists to avoid issues with validation
-        req.body.text = req.body.text || "";  
+        const newPost = new Post({
+            userId: req.user.id,
+            resumeText: text || "",
+            pdfUrl,
+            company,
+            role
+        });
 
-        // Simulating file structure expected by `createPost`
-        req.file = { filename: pdfUrl };  
+        await newPost.save();
+        res.status(201).json({ message: "Resume uploaded successfully!", post: newPost });
 
-        return createPost(req, res);  // Call the controller function properly
     } catch (error) {
         console.error("Error creating post:", error);
         res.status(500).json({ error: "Failed to create post" });
@@ -62,6 +74,5 @@ router.get("/member-posts", authenticateUser, authenticateMember, async (req, re
 });
 
 router.get("/:postId/compatibility", authenticateUser, checkJobCompatibility);
-
 
 export const PostRouter = router;

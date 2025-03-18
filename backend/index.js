@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { UserRouter } from './routes/user.js';
 import { PostRouter } from './routes/posts.js';
+import { AdminRouter } from './routes/admin.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use('/auth', UserRouter);
 app.use('/api/posts', PostRouter);
+app.use("/admin", AdminRouter);
 
 // Get the directory name in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +37,15 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+app.post('/api/posts', (req, res) => {
+    const { company, role } = req.body;
+    console.log(`Company: ${company}, Role: ${role}`);
+    
+    // Handle file and text saving to the database
+    res.json({ message: "Resume uploaded successfully!" });
+  });
+  
 
 app.get("/uploads/:filename", (req, res) => {
     const filePath = path.join(__dirname, "uploads", req.params.filename);

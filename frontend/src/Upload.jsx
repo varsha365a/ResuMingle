@@ -9,6 +9,25 @@ const Upload = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [text, setText] = useState("");
+
+  const companyRoles = {
+    "Amrita Pest Control Pvt. Ltd.": ["Pest Control Operator", "Supervisor"],
+    "ID Tag Systems": ["Receptionist", "Designer", "Assistant Operator"],
+    "Wipro": ["Frontend Developer", "Backend Developer"],
+    "TCS": ["Full Stack Developer"]
+  };
+
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("");
+
+  const handleCompanyChange = (e) => {
+    const company = e.target.value;
+    setSelectedCompany(company);
+    setRoles(companyRoles[company] || []);
+    setSelectedRole(""); 
+  };  
+
   Axios.defaults.withCredentials = true;
 
   const handleLogout = () => {
@@ -52,13 +71,19 @@ const Upload = () => {
     }
   };
 
-  // Posting Resume Text
   const handlePost = async () => {
+    if (!selectedCompany || !selectedRole) {
+      alert("Please select a company and a role.");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("text", text);
+    formData.append("pdf", file);
+    formData.append("company", selectedCompany);
+    formData.append("role", selectedRole);
+  
     try {
-      const formData = new FormData();
-      formData.append("text", text);
-      formData.append("pdf", file);
-
       await Axios.post("http://localhost:3000/api/posts", formData, {
         withCredentials: true,
         headers: {
@@ -70,6 +95,7 @@ const Upload = () => {
       console.error("Error posting resume:", err);
     }
   };
+  
 
   return (
     <div className="home-container">
@@ -90,6 +116,37 @@ const Upload = () => {
         </div>
       </div>
       <br></br>
+
+      <div>
+        <label>Select Company:</label>
+        <select value={selectedCompany} onChange={handleCompanyChange}>
+          <option value="">Select Company</option>
+          {Object.keys(companyRoles).map((company) => (
+            <option key={company} value={company}>
+              {company}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <br></br>
+
+      {roles.length > 0 && (
+        <div>
+          <label>Select Role:</label>
+          <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+            <option value="">Select Role</option>
+            {roles.map((role, index) => (
+              <option key={index} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <br></br>
+
       <h1 className="upload-heading">Upload a Resume</h1>
       <div className="upload-box">
         <input type="file" accept=".pdf" onChange={handleFileChange} />
