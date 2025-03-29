@@ -21,16 +21,13 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email, company });
 
     if (!user) {
-      console.log("User not found for email:", email, "and company:", company);
-      return res.json({ status: false, message: "User does not exist" });
+      return res.status(404).json({ status: false, message: "User does not exist" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
-    
-    console.log("Password Match:", validPassword);
 
     if (!validPassword) {
-      return res.json({ status: false, message: "Incorrect password" });
+      return res.status(401).json({ status: false, message: "Incorrect password" });
     }
 
     const token = jwt.sign(
@@ -41,7 +38,7 @@ router.post('/login', async (req, res) => {
 
     res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'lax', secure: true });
 
-    return res.json({ status: true, message: "User logged in successfully", role: user.role });
+    return res.status(200).json({ status: true, message: "User logged in successfully", role: user.role });
   } catch (error) {
     console.error("Error during login:", error);
     return res.status(500).json({ status: false, message: "Internal server error" });
@@ -116,8 +113,18 @@ router.post('/forgot-password', async (req, res) => {
     }
   };
   
-  router.get('/verify', verifyUser, (req, res) => {
-    return res.json({ status: true, message: "User verified" });
+  router.get('/verify', (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.json({ status: false, message: "Unauthorized" });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.KEY);
+      return res.json({ status: true, username: decoded.username });
+    } catch (error) {
+      return res.json({ status: false, message: "Invalid token" });
+    }
   });
 
   router.post("/save-compatibility", authenticateUser, saveCompatibilityScore);

@@ -46,6 +46,7 @@ app.post('/api/posts', (req, res) => {
     res.json({ message: "Resume uploaded successfully!" });
   });
   
+app.use("/api/user", UserRouter);  
 
 app.get("/uploads/:filename", (req, res) => {
     const filePath = path.join(__dirname, "uploads", req.params.filename);

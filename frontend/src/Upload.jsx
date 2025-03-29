@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import * as pdfjs from "pdfjs-dist/webpack";
@@ -9,6 +9,7 @@ const Upload = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [text, setText] = useState("");
+  const [error, setError] = useState("");
 
   const companyRoles = {
     "Amrita Pest Control Pvt. Ltd.": ["Pest Control Operator", "Supervisor"],
@@ -39,6 +40,16 @@ const Upload = () => {
       })
       .catch((err) => console.error(err));
   };
+
+  useEffect(() => {
+    Axios.get("http://localhost:3000/api/posts/has-posted")
+      .then((res) => {
+        if (res.data.hasPosted) {
+          navigate("/posts"); // Redirect to Posts page if the user has already posted
+        }
+      })
+      .catch((err) => console.error("Error checking post status:", err));
+  }, [navigate]);
 
   // File Upload
   const handleFileChange = async (e) => {
@@ -92,7 +103,11 @@ const Upload = () => {
       });
       navigate("/posts");
     } catch (err) {
-      console.error("Error posting resume:", err);
+      if (err.response && err.response.data.error) {
+        setError(err.response.data.error); // Display error message from the backend
+      } else {
+        console.error("Error creating post:", err);
+      }
     }
   };
   
@@ -110,7 +125,7 @@ const Upload = () => {
                 <a className="dropdown-item" href="/dashboard">Dashboard</a>
                 <a className="dropdown-item" href="/upload">Home</a>
                 <a className="dropdown-item" href="/posts">Posts</a>
-              <a className="dropdown-item" onClick={handleLogout}>Logout</a>
+                <a className="dropdown-item" onClick={handleLogout}>Logout</a>
             </div>
           </div>
         </div>
@@ -152,11 +167,7 @@ const Upload = () => {
         <input type="file" accept=".pdf" onChange={handleFileChange} />
         {file && <p>Uploaded: {file.name}</p>}
       </div>
-      <Link to="/posts">
-        <button className="btn">View Posts</button>
-      </Link>
 
-      {/* Extracted Text Container */}
       {text && (
         <div className="text-container">
           <h3>Extracted Resume Text:</h3>
@@ -164,8 +175,8 @@ const Upload = () => {
         </div>
       )}
 
-      {/* Post Button */}
-      {text && <button onClick={handlePost} className="post-btn">Post</button>}
+      {text && <button onClick={handlePost} className="btn">Post</button>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };

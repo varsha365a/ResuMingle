@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Axios from "axios";
 import "../src/Styles.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserLarge } from "react-icons/fa6";
 import { FcLike } from "react-icons/fc";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { HiDotsVertical } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
+
   Axios.defaults.withCredentials = true;
 
   useEffect(() => {
@@ -21,7 +22,15 @@ const Posts = () => {
       .catch((err) => console.error("Error fetching posts:", err));
   }, []);
 
-  const navigate = useNavigate();
+  const handleLogout = () => {
+    Axios.get("http://localhost:3000/auth/logout")
+      .then((res) => {
+        if (res.data.status) {
+          navigate("/login");
+        }
+      })
+      .catch((err) => console.error("Error logging out:", err));
+  };
 
   const handleJobCompatibility = (postId) => {
     navigate(`/job-compatibility/${postId}`);
@@ -33,13 +42,36 @@ const Posts = () => {
         `http://localhost:3000/api/posts/${postId}/like`,
         {},
         { withCredentials: true }
-    );
-    
-      setPosts(posts.map(post => post._id === postId ? { ...post, likes: res.data.likes } : post));
+      );
+
+      setPosts(posts.map((post) => (post._id === postId ? { ...post, likes: res.data.likes } : post)));
     } catch (err) {
       console.error("Error liking post:", err);
     }
   };
+
+  const handleDeletePost = async (postId) => {
+    console.log("Attempting to delete post with ID:", postId); // Debugging
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your post? You will need to upload the resume from the beginning."
+    );
+  
+    if (confirmDelete) {
+      try {
+        const response = await Axios.delete(`http://localhost:3000/api/posts/${postId}`);
+        console.log("Delete response:", response.data); // Debugging
+  
+        // Remove deleted post from UI
+        setPosts(posts.filter(post => post._id !== postId));
+  
+        // Redirect to upload page
+        navigate("/upload");
+      } catch (err) {
+        console.error("Error deleting post:", err);
+      }
+    }
+  };
+  
 
   return (
     <div className="home-container">
@@ -54,6 +86,7 @@ const Posts = () => {
               <Link className="dropdown-item" to="/dashboard">Dashboard</Link>
               <Link className="dropdown-item" to="/upload">Home</Link>
               <Link className="dropdown-item" to="/posts">Posts</Link>
+              <button className="dropdown-item" onClick={handleLogout}>Logout</button>
             </div>
           </div>
         </div>
@@ -77,32 +110,34 @@ const Posts = () => {
                     width="100%" 
                     height="500px"
                     style={{ border: "none" }}
-                  >
-                    
-                  </iframe>
-
+                  />
                 ) : (
                   <p>No PDF available</p>
                 )}
               </div>
               <div className="post-actions">
-                <button onClick={() => handleJobCompatibility(post._id)}>
-                  🚀 Job Compatibility
-                </button>
-
+                <button onClick={() => handleJobCompatibility(post._id)}>Job Compatibility</button>
                 <button className="like-btn" onClick={() => handleLike(post._id)}>
-                   <FcLike /> {post.likes?.length || 0}
+                  <FcLike /> {post.likes?.length || 0}
                 </button>
-
                 <button className="comment-btn">
-                   <FaRegCommentDots />Comments
+                  <FaRegCommentDots /> Comments
                 </button>
 
-                <button className="options-btn">
-                   <HiDotsVertical />
-                </button>
+                {/* Options Dropdown */}
+                <div className="dropdown">
+                  <button className="options-btn btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <HiDotsVertical />
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button className="dropdown-item text-danger" onClick={() => handleDeletePost(post._id)}>
+                        Delete Post
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
-
             </div>
           ))
         )}

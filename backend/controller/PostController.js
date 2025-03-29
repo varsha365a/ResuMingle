@@ -4,22 +4,32 @@ import { User } from "../models/User.js";
 export const createPost = async (req, res) => {
     try {
         console.log("User in createPost:", req.user);
-        const { text } = req.body;
         const userId = req.user.id;
 
         if (!userId) {
             return res.status(400).json({ error: "User ID missing from token" });
         }
 
+        const existingPost = await Post.findOne({ userId });
+        if (existingPost) {
+            return res.status(400).json({ error: "User has already created a post" });
+        }
+
+        const { text, company, role } = req.body;
+
+        if (!company || !role) {
+            return res.status(400).json({ error: "Company and Role are required" });
+        }
+
         let pdfUrl = null;
         if (req.file) {
-            pdfUrl = req.file.filename; 
+            pdfUrl = req.file.filename;
         }
-        
-        const newPost = new Post({ userId, resumeText: text, pdfUrl });
+
+        const newPost = new Post({ userId, resumeText: text, pdfUrl, company, role });
         await newPost.save();
 
-        res.status(201).json(newPost);
+        res.status(201).json({ message: "Post created successfully", post: newPost });
     } catch (error) {
         console.error("Error creating post:", error);
         res.status(500).json({ error: "Failed to create post" });
@@ -28,16 +38,14 @@ export const createPost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
     try {
-        const userId = req.user.id; 
-
-        const posts = await Post.find({ userId }).sort({ createdAt: -1 }); 
-
+        const userId = req.user.id; // Get logged-in user ID
+        const posts = await Post.find({ userId }).populate("userId", "username"); // Fetch only their posts
         res.status(200).json(posts);
     } catch (error) {
-        console.error("Error fetching user posts:", error);
+        console.error("Error fetching posts:", error);
         res.status(500).json({ error: "Failed to fetch posts" });
     }
-};  
+};
 
 export const likePost = async (req, res) => {
     try {
@@ -138,21 +146,30 @@ export const checkJobCompatibility = async (req, res) => {
 export const saveCompatibilityScore = async (req, res) => {
     try {
         const { postId, score } = req.body;
-        const userId = req.user.id; // Get user ID from auth middleware
+        const userId = req.user?.id; // Ensure req.user exists
 
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ error: "User not found" });
+        if (!postId || score === undefined) {
+            return res.status(400).json({ error: "postId and score are required." });
+        }
 
-        // Store only one job compatibility score (overwrite previous score)
-        user.jobCompatibilityScore = { postId, score, date: Date.now() };
-        await user.save();
+        if (!userId) {
+            return res.status(400).json({ error: "User ID missing from token" });
+        }
 
-        res.status(200).json({ message: "Score saved successfully!" });
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { jobCompatibilityScore: { postId, score, date: new Date() } },
+            { new: true, runValidators: true } // Return the updated document
+        );
+
+        if (!updatedUser) {
+            console.error(`User not found with ID: ${userId}`);
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json({ message: "Score saved successfully!", user: updatedUser });
     } catch (error) {
         console.error("Error saving compatibility score:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
-
-

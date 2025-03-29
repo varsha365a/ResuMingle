@@ -14,18 +14,22 @@ const AdminDashboard = () => {
         axios.get("http://localhost:3000/admin/resumes", {
             withCredentials: true, 
         })
-        .then(response => setResumes(response.data))
-        .catch(error => console.error(error));
-    }, []);    
+        .then(response => {
+            console.log("API Response:", JSON.stringify(response.data, null, 2)); 
+            setResumes(response.data);
+        })
+        .catch(error => console.error("Error fetching resumes:", error));
+    }, []);  
+    
 
     return (
         <div>
             <AppBar position="static" style={{ backgroundColor: "#2c3e50" }}>
                 <Toolbar>
                     <Typography variant="h6" style={{ flexGrow: 1 }}>
-                        Admin Dashboard - Resume Management
+                        Admin Dashboard - Applicant Management
                     </Typography>
-                    <Button color="inherit" onClick={ handleLogout }>Logout</Button>
+                    <Button color="inherit" onClick={handleLogout}>Logout</Button>
                 </Toolbar>
             </AppBar>
 
@@ -37,6 +41,7 @@ const AdminDashboard = () => {
                             <TableCell style={{ color: "white" }}>Email</TableCell>
                             <TableCell style={{ color: "white" }}>Company</TableCell>
                             <TableCell style={{ color: "white" }}>Role</TableCell>
+                            <TableCell style={{ color: "white" }}>Score</TableCell>
                             <TableCell style={{ color: "white" }}>Resume</TableCell>
                         </TableRow>
                     </TableHead>
@@ -48,17 +53,20 @@ const AdminDashboard = () => {
                                 <TableCell>{resume.company}</TableCell>
                                 <TableCell>{resume.role}</TableCell>
                                 <TableCell>
-
-                                <Button 
-                                    variant="contained" 
-                                    color="primary" 
-                                    onClick={() => {
-                                        window.open(`http://localhost:3000/uploads/${resume.pdfUrl}`, "_blank");
-                                    }}
-                                >
-                                    View Resume
-                                </Button>
-
+                                    {resume.userId?.jobCompatibilityScore?.length > 0
+                                        ? resume.userId.jobCompatibilityScore.join(", ")
+                                        : "N/A"}
+                                </TableCell>
+                                <TableCell>
+                                    <Button 
+                                        variant="contained" 
+                                        color="primary" 
+                                        onClick={() => {
+                                            window.open(`http://localhost:3000/uploads/${resume.pdfUrl}`, "_blank");
+                                        }}
+                                    >
+                                        View Resume
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

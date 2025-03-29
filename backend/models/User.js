@@ -25,12 +25,12 @@ const UserSchema = new mongoose.Schema({
         enum: ["user", "member"],
         default: "user"
     },
-    jobCompatibilityScores: {
-        postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+    jobCompatibilityScore: [{ 
+        postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
         score: { type: Number, required: true },
-        date: { type: Date, default: Date.now }
-    }
-})
+        date: { type: Date }
+    }]
+});
 
 UserSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
