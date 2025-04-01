@@ -52,26 +52,22 @@ const Posts = () => {
 
   const handleDeletePost = async (postId) => {
     console.log("Attempting to delete post with ID:", postId); // Debugging
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your post? You will need to upload the resume from the beginning."
-    );
-  
+
+    const confirmDelete = window.confirm("Are you sure you want to delete your post?");
+
     if (confirmDelete) {
-      try {
-        const response = await Axios.delete(`http://localhost:3000/api/posts/${postId}`);
-        console.log("Delete response:", response.data); // Debugging
-  
-        // Remove deleted post from UI
-        setPosts(posts.filter(post => post._id !== postId));
-  
-        // Redirect to upload page
-        navigate("/upload");
-      } catch (err) {
-        console.error("Error deleting post:", err);
-      }
+        try {
+            const response = await Axios.delete(`http://localhost:3000/api/posts/${postId}`);
+            console.log("Delete response:", response.data);
+
+            setPosts(posts.filter(post => post._id !== postId));
+
+            navigate("/upload");
+        } catch (err) {
+            console.error("Error deleting post:", err);
+        }
     }
-  };
-  
+};  
 
   return (
     <div className="home-container">

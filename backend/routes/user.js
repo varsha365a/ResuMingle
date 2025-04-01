@@ -4,7 +4,7 @@ const router = express.Router();
 import { User } from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { saveCompatibilityScore} from "../controller/PostController.js";
+import { saveCompatibilityScore } from "../controller/PostController.js";
 import { authenticateUser } from "../middleware/auth.js";
 
 router.post('/signup', async (req, res) => {
@@ -84,54 +84,88 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-  router.post('/resetPassword/:token', async(req, res) => {
-    const { token } = req.params;
-    const { password } = req.body;
-    try {
-        const decoded = await jwt.verify(token, process.env.KEY);
-        const id = decoded.id;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.findByIdAndUpdate({_id: id}, { password: hashedPassword });
-        return res.json({ status: true, message: "Password reset successfully" });
-  
-    } catch (error) {
-        return res.json({ message: "Expired or invalid link" });
-    }
-  });
-
-  const verifyUser = async (req, res, next) => {
-    try {
-      const token = req.cookies.token;
-      if (!token) {
-        return res.json({ status: false, message: "Access denied" });
-      }
+router.post('/resetPassword/:token', async(req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  try {
       const decoded = await jwt.verify(token, process.env.KEY);
-      req.user = decoded;
-      next();
-    } catch (error) {
-      return res.json({ status: false, message: "Invalid token" });
-    }
-  };
-  
-  router.get('/verify', (req, res) => {
+      const id = decoded.id;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await User.findByIdAndUpdate({_id: id}, { password: hashedPassword });
+      return res.json({ status: true, message: "Password reset successfully" });
+
+  } catch (error) {
+      return res.json({ message: "Expired or invalid link" });
+  }
+});
+
+const verifyUser = async (req, res, next) => {
+  try {
     const token = req.cookies.token;
     if (!token) {
-      return res.json({ status: false, message: "Unauthorized" });
+      return res.json({ status: false, message: "Access denied" });
     }
-  
-    try {
-      const decoded = jwt.verify(token, process.env.KEY);
-      return res.json({ status: true, username: decoded.username });
-    } catch (error) {
-      return res.json({ status: false, message: "Invalid token" });
-    }
-  });
+    const decoded = await jwt.verify(token, process.env.KEY);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.json({ status: false, message: "Invalid token" });
+  }
+};
 
-  router.post("/save-compatibility", authenticateUser, saveCompatibilityScore);
-  
-  router.get('/logout', (req, res) => {
-    res.clearCookie('token');
-    return res.json({ status: true, message: "User logged out successfully" });
-  });
+router.get('/verify', (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.json({ status: false, message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.KEY);
+    return res.json({ status: true, username: decoded.username });
+  } catch (error) {
+    return res.json({ status: false, message: "Invalid token" });
+  }
+});
+
+router.post("/save-compatibility", authenticateUser, saveCompatibilityScore);
+
+router.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  return res.json({ status: true, message: "User logged out successfully" });
+});
+
+router.get("/user", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.id; // Extract user ID from the token
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ company: user.company });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Fetch user scores
+router.get("/scores", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.id; // Extract user ID from the token
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Assuming `jobCompatibilityScore` is an array of scores in the User model
+    res.status(200).json({ scores: user.jobCompatibilityScore });
+  } catch (error) {
+    console.error("Error fetching user scores:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 export { router as UserRouter };

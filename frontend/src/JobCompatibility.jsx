@@ -24,7 +24,7 @@ const JobCompatibility = () => {
                 setLoading(false);
                 determineMessage(score);
                 
-                if (score >= 80) {
+                if (score >= 60) {
                     setConfetti(true);
                 }
 
@@ -53,15 +53,19 @@ const JobCompatibility = () => {
 
   const determineMessage = (score) => {
     if (score >= 80) {
-      setMessage(" You're an EXCELLENT match ! This job is perfect for you!");
+      setMessage(" You're the PERFECT match ! This job is apt for you! We will reach out to hire you soon.");
       setEmoji("🎯");
       setProgressColor("#00ff88");
     } else if (score >= 60) {
-      setMessage(" You're a GOOD match ! You have most of the required skills.");
+      setMessage(" You're an EXCELLENT match ! You have most of the required skills. We will reach out to you soon.");
       setEmoji("💪");
       setProgressColor("#ffcc00");
-    } else if (score >= 30) {
-      setMessage(" You're a DECENT match ! A little improvement can boost your chances.");
+    } else if (score >= 40) {
+      setMessage(" You're a VERY GOOD match ! You have some of the required skills that we are searching for. We will contact you soon");
+      setEmoji("💪");
+      setProgressColor("#ffcc00");
+    } else if (score >= 20) {
+      setMessage(" You're a GOOD match ! A little improvement can boost your chances.");
       setEmoji("🙂");
       setProgressColor("#ff8c00");
     } else {

@@ -41,8 +41,6 @@ app.listen(PORT, () => {
 app.post('/api/posts', (req, res) => {
     const { company, role } = req.body;
     console.log(`Company: ${company}, Role: ${role}`);
-    
-    // Handle file and text saving to the database
     res.json({ message: "Resume uploaded successfully!" });
   });
   

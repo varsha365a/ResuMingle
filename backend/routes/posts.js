@@ -65,26 +65,25 @@ router.put("/:postId/like", authenticateUser, likePost);
 router.post("/:postId/comment", authenticateUser, addComment);
 
 // DELETE: Delete a post
-router.delete("/api/posts/:postId", async (req, res) => {
+router.delete("/:postId", async (req, res) => {
     try {
-      const postId = req.params.postId;
-  
-      // Convert to MongoDB ObjectId if necessary
-      if (!mongoose.Types.ObjectId.isValid(postId)) {
-        return res.status(400).json({ error: "Invalid post ID format" });
-      }
-  
-      const deletedPost = await Post.findByIdAndDelete(postId);
-  
-      if (!deletedPost) {
-        return res.status(404).json({ error: "Post not found" });
-      }
-  
-      res.status(200).json({ message: "Post deleted successfully" });
+        const postId = req.params.postId;
+        
+        if (!mongoose.Types.ObjectId.isValid(postId)) {
+            return res.status(400).json({ error: "Invalid post ID format" });
+        }
+
+        const deletedPost = await Post.findByIdAndDelete(postId);
+
+        if (!deletedPost) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        res.status(200).json({ message: "Post deleted successfully" });
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete post" });
+        res.status(500).json({ error: "Failed to delete post" });
     }
-  });
+});
 
 // GET: Fetch member posts
 router.get("/member-posts", authenticateUser, authenticateMember, async (req, res) => {

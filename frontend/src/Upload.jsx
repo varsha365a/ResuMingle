@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as pdfjs from "pdfjs-dist/webpack";
 import "../src/Styles.css";
 import { FaUserLarge } from "react-icons/fa6";
@@ -10,7 +10,11 @@ const Upload = () => {
   const [file, setFile] = useState(null);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("");
 
+  // Company-Roles Mapping
   const companyRoles = {
     "Amrita Pest Control Pvt. Ltd.": ["Pest Control Operator", "Supervisor"],
     "ID Tag Systems": ["Receptionist", "Designer", "Assistant Operator"],
@@ -18,19 +22,22 @@ const Upload = () => {
     "TCS": ["Full Stack Developer"]
   };
 
-  const [selectedCompany, setSelectedCompany] = useState("");
-  const [roles, setRoles] = useState([]);
-  const [selectedRole, setSelectedRole] = useState("");
-
-  const handleCompanyChange = (e) => {
-    const company = e.target.value;
-    setSelectedCompany(company);
-    setRoles(companyRoles[company] || []);
-    setSelectedRole(""); 
-  };  
-
   Axios.defaults.withCredentials = true;
 
+  // Fetch User Data from `/auth/user`
+  useEffect(() => {
+    Axios.get("http://localhost:3000/auth/user")
+      .then((res) => {
+        console.log("Fetched User Data:", res.data); // Debugging Log
+        if (res.data.company) {
+          setSelectedCompany(res.data.company);
+          setRoles(companyRoles[res.data.company] || []);
+        }
+      })
+      .catch((err) => console.error("Error fetching user details:", err));
+  }, []);
+
+  // Logout Function
   const handleLogout = () => {
     Axios.get("http://localhost:3000/auth/logout")
       .then((res) => {
@@ -41,20 +48,11 @@ const Upload = () => {
       .catch((err) => console.error(err));
   };
 
-  useEffect(() => {
-    Axios.get("http://localhost:3000/api/posts/has-posted")
-      .then((res) => {
-        if (res.data.hasPosted) {
-          navigate("/posts"); // Redirect to Posts page if the user has already posted
-        }
-      })
-      .catch((err) => console.error("Error checking post status:", err));
-  }, [navigate]);
-
-  // File Upload
+  // File Upload & PDF Extraction
   const handleFileChange = async (e) => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
+    console.log("Selected File:", uploadedFile);
 
     if (uploadedFile && uploadedFile.type === "application/pdf") {
       const reader = new FileReader();
@@ -73,6 +71,7 @@ const Upload = () => {
             extractedText += pageText + "\n";
           }
 
+          console.log("Extracted Text:", extractedText); // Debugging Log
           setText(extractedText);
         } catch (err) {
           console.error("Error extracting text from PDF:", err);
@@ -82,18 +81,21 @@ const Upload = () => {
     }
   };
 
+  // Posting Data to Backend
   const handlePost = async () => {
     if (!selectedCompany || !selectedRole) {
-      alert("Please select a company and a role.");
+      alert("Please select a role.");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("text", text);
     formData.append("pdf", file);
     formData.append("company", selectedCompany);
     formData.append("role", selectedRole);
-  
+
+    console.log("Posting Data:", { text, file, selectedCompany, selectedRole }); // Debugging Log
+
     try {
       await Axios.post("http://localhost:3000/api/posts", formData, {
         withCredentials: true,
@@ -103,14 +105,10 @@ const Upload = () => {
       });
       navigate("/posts");
     } catch (err) {
-      if (err.response && err.response.data.error) {
-        setError(err.response.data.error); // Display error message from the backend
-      } else {
-        console.error("Error creating post:", err);
-      }
+      console.error("Error creating post:", err);
+      setError(err.response?.data?.error || "An error occurred. Please try again.");
     }
   };
-  
 
   return (
     <div className="home-container">
@@ -122,45 +120,40 @@ const Upload = () => {
               <FaUserLarge />
             </button>
             <div className="dropdown-menu">
-                <a className="dropdown-item" href="/dashboard">Dashboard</a>
-                <a className="dropdown-item" href="/upload">Home</a>
-                <a className="dropdown-item" href="/posts">Posts</a>
-                <a className="dropdown-item" onClick={handleLogout}>Logout</a>
+              <a className="dropdown-item" href="/dashboard">Dashboard</a>
+              <a className="dropdown-item" href="/upload">Home</a>
+              <a className="dropdown-item" href="/posts">Posts</a>
+              <a className="dropdown-item" onClick={handleLogout}>Logout</a>
             </div>
           </div>
         </div>
       </div>
-      <br></br>
+      <br />
 
+      {/* Display Fetched Company */}
       <div>
-        <label>Select Company:</label>
-        <select value={selectedCompany} onChange={handleCompanyChange}>
-          <option value="">Select Company</option>
-          {Object.keys(companyRoles).map((company) => (
-            <option key={company} value={company}>
-              {company}
-            </option>
-          ))}
-        </select>
+        <label>Company:</label>
+        <input type="text" value={selectedCompany} readOnly />
       </div>
 
-      <br></br>
+      <br />
 
-      {roles.length > 0 && (
+      {/* Role Selection */}
+      {roles.length > 0 ? (
         <div>
           <label>Select Role:</label>
           <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
             <option value="">Select Role</option>
             {roles.map((role, index) => (
-              <option key={index} value={role}>
-                {role}
-              </option>
+              <option key={index} value={role}>{role}</option>
             ))}
           </select>
         </div>
+      ) : (
+        <p>No roles available</p>
       )}
 
-      <br></br>
+      <br />
 
       <h1 className="upload-heading">Upload a Resume</h1>
       <div className="upload-box">

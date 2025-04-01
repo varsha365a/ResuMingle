@@ -1,5 +1,6 @@
 import { Post } from "../models/Post.js";
 import { User } from "../models/User.js";
+import { Keyword } from "../models/Keyword.js";
 
 export const createPost = async (req, res) => {
     try {
@@ -97,26 +98,25 @@ export const checkJobCompatibility = async (req, res) => {
             return res.status(404).json({ error: "Post or resume text not found" });
         }
 
-        const jobKeywords = [
-            "HTML", "CSS", "JavaScript", "React.js", "Vue.js", "Bootstrap", "Tailwind CSS",
-            "Node.js", "Express.js", "SQL", "MongoDB", "PostgreSQL", "MySQL", "PHP", "Laravel",
-            "MERN", "Git", "Full Stack Developer", "Full Stack", "Web Development", "Web Developer",
-            "Cloud Computing", "Networking", "Debugging", "Version Control", "API Development",
-            "Authentication", "Data Structures", "Algorithms", "Problem Solving", "Teamwork",
-            "Agile Methodology", "C++", "Kotlin", "Dart", "Flutter", "Internship", "Hackathon",
-            "E-Commerce", "Projects", "Software Development", "Software Engineer", "Database",
-            "Coding", "Programming", "Computer Science", "Tech Quiz", "Bachelor of Science",
-            "Responsive Design", "Microsoft Office", "Python", "Java", "Backend Development",
-            "Frontend Development", "SDLC", "Web App", "App Development", "REST API",
-            "Machine Learning", "Artificial Intelligence", "Data Analysis", "Scrum",
-            "Cybersecurity", "Performance Optimization", "CI/CD", "Software Testing"
-        ];
+        // Fetch keywords from the database for the given company and role
+        const keywordEntry = await Keyword.findOne({ company: post.company });
 
-        // Normalize the text: remove extra spaces, new lines, and convert to lowercase
+        if (!keywordEntry) {
+            return res.status(404).json({ error: "No keywords found for this company" });
+        }
+
+        const roleKeywords = keywordEntry.roles.find(r => r.role === post.role);
+        if (!roleKeywords) {
+            return res.status(404).json({ error: "No keywords found for this role" });
+        }
+
+        const jobKeywords = roleKeywords.keywords; // Extract keywords array
+
+        // Normalize resume text
         const cleanText = post.resumeText
             .toLowerCase()
-            .replace(/[^a-zA-Z0-9\s.\-+#/]/g, " ") // Remove special characters
-            .replace(/\s+/g, " ") // Remove extra spaces and newlines
+            .replace(/[^a-zA-Z0-9\s.\-+#/]/g, " ") 
+            .replace(/\s+/g, " ") 
             .trim();
 
         let matchedKeywords = new Set();
