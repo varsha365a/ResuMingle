@@ -18,30 +18,27 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     role: {
-        type: String,  // Add role field
+        type: String, 
         required: true
     },
-    likes: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    comments: [{
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        text: {
-            type: String
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    likes: {
+        type: [String],
+        default: [],
+      },
+    dislikes: {
+        type: [String],
+        default: [],
+      },
+      comments: {
+        type: [
+          {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            comment: String,
+            createdAt: { type: Date, default: Date.now },
+          }
+        ],
+        default: [],
+      },
 });
 
 export const Post = mongoose.model('Post', postSchema);

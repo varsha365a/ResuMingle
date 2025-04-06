@@ -48,46 +48,33 @@ export const getAllPosts = async (req, res) => {
     }
 };
 
-export const likePost = async (req, res) => {
-    try {
-        const { postId } = req.params;
-        const userId = req.user.id;
-
-        const post = await Post.findById(postId);
-        if (!post) return res.status(404).json({ error: "Post not found" });
-
-        const index = post.likes.indexOf(userId);
-        if (index === -1) {
-            post.likes.push(userId); 
-        } else {
-            post.likes.splice(index, 1);
-        }
-
-        await post.save();
-        res.json({ success: true, likes: post.likes.length }); 
-    } catch (error) {
-        res.status(500).json({ error: "Failed to like/unlike post" });
-    }
-};
-
-
 export const addComment = async (req, res) => {
     try {
-        const { postId } = req.params;
-        const { text } = req.body;
-        const userId = req.user.id;
-
-        const post = await Post.findById(postId);
-        if (!post) return res.status(404).json({ error: "Post not found" });
-
-        post.comments.push({ userId, text });
-        await post.save();
-
-        res.json(post);
+      const { postId } = req.params;
+      const { comment } = req.body;
+      const userId = req.user.id;
+  
+      if (!comment) return res.status(400).json({ error: "Comment cannot be empty" });
+  
+      const newComment = {
+        userId,
+        comment,
+        createdAt: new Date()
+      };
+  
+      const updatedPost = await Post.findByIdAndUpdate(
+        postId,
+        { $push: { comments: newComment } },
+        { new: true }
+      ).populate("comments.userId", "username");
+  
+      res.status(200).json(updatedPost.comments); // Only return updated comments
     } catch (error) {
-        res.status(500).json({ error: "Failed to add comment" });
+      console.error("Error adding comment:", error);
+      res.status(500).json({ error: "Server error" });
     }
-};
+  };
+  
 
 export const checkJobCompatibility = async (req, res) => {
     try {

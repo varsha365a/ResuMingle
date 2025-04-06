@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import mongoose from "mongoose";
-import { createPost, getAllPosts, likePost, addComment, checkJobCompatibility } from "../controller/PostController.js";
+import { createPost, getAllPosts, addComment, checkJobCompatibility } from "../controller/PostController.js";
 import { authenticateUser, authenticateMember } from "../middleware/auth.js";
 import { Post } from "../models/Post.js";    
 
@@ -58,12 +58,6 @@ router.post("/", authenticateUser, upload.single('pdf'), async (req, res) => {
 // GET: Fetch all posts
 router.get("/", authenticateUser, getAllPosts);
 
-// PUT: Like a post
-router.put("/:postId/like", authenticateUser, likePost);
-
-// POST: Add a comment to a post
-router.post("/:postId/comment", authenticateUser, addComment);
-
 // DELETE: Delete a post
 router.delete("/:postId", async (req, res) => {
     try {
@@ -102,14 +96,66 @@ router.get("/has-posted", authenticateUser, async (req, res) => {
         const userId = req.user.id;
         const post = await Post.findOne({ userId });
         if (post) {
-            return res.json({ hasPosted: true });
+            return res.status(200).json({ hasPosted: true });
         } else {
-            return res.json({ hasPosted: false });
+            return res.status(200).json({ hasPosted: false });
         }
     } catch (error) {
         console.error("Error checking if user has posted:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+router.get("/company-posts", authenticateUser, authenticateMember, async (req, res) => {
+    try {
+      const userCompany = req.user.company; // This should be populated from the JWT
+      const posts = await Post.find({ company: userCompany }).populate("userId", "username");
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching member's company posts:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  router.put("/:id/like", async (req, res) => {
+    try {
+      const userId = req.user._id; // from auth middleware
+      const post = await Post.findById(req.params.id);
+  
+      if (!post.likes.includes(userId)) {
+        post.likes.push(userId);
+        post.dislikes = post.dislikes.filter(id => id.toString() !== userId.toString());
+      } else {
+        post.likes = post.likes.filter(id => id.toString() !== userId.toString());
+      }
+  
+      await post.save();
+      res.status(200).json({ likes: post.likes, dislikes: post.dislikes });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.put("/:id/dislike", async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const post = await Post.findById(req.params.id);
+  
+      if (!post.dislikes.includes(userId)) {
+        post.dislikes.push(userId);
+        post.likes = post.likes.filter(id => id.toString() !== userId.toString());
+      } else {
+        post.dislikes = post.dislikes.filter(id => id.toString() !== userId.toString());
+      }
+  
+      await post.save();
+      res.status(200).json({ likes: post.likes, dislikes: post.dislikes });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post("/:postId/comment", authenticateUser, addComment);
+  
 
 export const PostRouter = router;

@@ -18,27 +18,39 @@ const Login = () => {
     setError("");
 
     try {
-        const response = await Axios.post("http://localhost:3000/api/user/login", { email, password, company });
+      const response = await Axios.post("http://localhost:3000/api/user/login", { email, password, company });
 
-        if (!response.data || typeof response.data !== "object") {
-            throw new Error("Invalid response from server");
-        }
+      if (!response.data || typeof response.data !== "object") {
+        throw new Error("Invalid response from server");
+      }
 
-        if (response.data.status) {
-            console.log("Login successful, Role:", response.data.role);
-            if (response.data.role === "member") {
-                navigate("/adminDashboard");
-            } else {
-                navigate("/upload");
-            }
+      if (response.data.status) {
+        console.log("Login successful, Role:", response.data.role);
+
+        if (response.data.role === "member") {
+          const postStatusRes = await Axios.get("http://localhost:3000/api/posts/has-posted");
+
+          if (postStatusRes.data && postStatusRes.data.hasPosted) {
+            // If the user has already posted, redirect to /posts
+            navigate("/posts");
+          } else {
+            // Otherwise, redirect to /upload
+            navigate("/upload");
+          }
+        } else if (response.data.role === "admin") {
+          navigate("/adminDashboard");
         } else {
-            setError(response.data.message);
+          // Fallback for any other roles
+          navigate("/upload");
         }
+      } else {
+        setError(response.data.message || "Login failed. Please try again.");
+      }
     } catch (error) {
-        console.error("Login error:", error);
-        setError(error.response?.data?.message || "An error occurred. Please try again.");
+      console.error("Login error:", error);
+      setError(error.response?.data?.message || "An error occurred. Please try again.");
     }
-};
+  };
 
   return (
     <div className="bg">

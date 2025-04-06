@@ -23,22 +23,29 @@ router.post('/login', async (req, res) => {
     if (!user) {
       return res.status(404).json({ status: false, message: "User does not exist" });
     }
-
+    
+    // Detect if email has '@member' and change role if needed
+    if (email.includes("@member") && user.role !== "member") {
+      user.role = "member";
+      await user.save(); // Update role in DB
+    }
+    
     const validPassword = await bcrypt.compare(password, user.password);
-
+    
     if (!validPassword) {
       return res.status(401).json({ status: false, message: "Incorrect password" });
     }
-
+    
     const token = jwt.sign(
       { id: user._id, username: user.username, company: user.company, role: user.role },
       process.env.KEY,
       { expiresIn: '1h' }
     );
-
+    
     res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'lax', secure: true });
-
+    
     return res.status(200).json({ status: true, message: "User logged in successfully", role: user.role });
+    
   } catch (error) {
     console.error("Error during login:", error);
     return res.status(500).json({ status: false, message: "Internal server error" });

@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["user", "member"],
+        enum: ["user", "member", "admin"],
         default: "user"
     },
     jobCompatibilityScore: [{ 

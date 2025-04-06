@@ -10,6 +10,9 @@ import Posts from "./Posts";
 import Home from "./Home";
 import AdminDashboard from "./AdminDashboard";
 import JobCompatibility from "./JobCompatibility"; 
+import MemberDash from "./MemberDash";
+import "./App.css";
+import "./Styles.css";
 
 function App() {
   return (
@@ -25,6 +28,7 @@ function App() {
         <Route path="/posts" element={<Posts />} />
         <Route path="/adminDashboard" element={<AdminDashboard />} />
         <Route path="/job-compatibility/:postId" element={<JobCompatibility />} />
+        <Route path="/memberDashboard" element={<MemberDash />} />
       </Routes>
     </BrowserRouter>
   );

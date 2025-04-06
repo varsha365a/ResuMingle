@@ -3,8 +3,6 @@ import Axios from "axios";
 import "../src/Styles.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserLarge } from "react-icons/fa6";
-import { FcLike } from "react-icons/fc";
-import { FaRegCommentDots } from "react-icons/fa6";
 import { HiDotsVertical } from "react-icons/hi";
 
 const Posts = () => {
@@ -36,38 +34,24 @@ const Posts = () => {
     navigate(`/job-compatibility/${postId}`);
   };
 
-  const handleLike = async (postId) => {
-    try {
-      const res = await Axios.put(
-        `http://localhost:3000/api/posts/${postId}/like`,
-        {},
-        { withCredentials: true }
-      );
-
-      setPosts(posts.map((post) => (post._id === postId ? { ...post, likes: res.data.likes } : post)));
-    } catch (err) {
-      console.error("Error liking post:", err);
-    }
-  };
-
   const handleDeletePost = async (postId) => {
     console.log("Attempting to delete post with ID:", postId); // Debugging
 
     const confirmDelete = window.confirm("Are you sure you want to delete your post?");
 
     if (confirmDelete) {
-        try {
-            const response = await Axios.delete(`http://localhost:3000/api/posts/${postId}`);
-            console.log("Delete response:", response.data);
+      try {
+        const response = await Axios.delete(`http://localhost:3000/api/posts/${postId}`);
+        console.log("Delete response:", response.data);
 
-            setPosts(posts.filter(post => post._id !== postId));
+        setPosts(posts.filter(post => post._id !== postId));
 
-            navigate("/upload");
-        } catch (err) {
-            console.error("Error deleting post:", err);
-        }
+        navigate("/upload");
+      } catch (err) {
+        console.error("Error deleting post:", err);
+      }
     }
-};  
+  };
 
   return (
     <div className="home-container">
@@ -112,12 +96,8 @@ const Posts = () => {
                 )}
               </div>
               <div className="post-actions">
-                <button onClick={() => handleJobCompatibility(post._id)}>Job Compatibility</button>
-                <button className="like-btn" onClick={() => handleLike(post._id)}>
-                  <FcLike /> {post.likes?.length || 0}
-                </button>
-                <button className="comment-btn">
-                  <FaRegCommentDots /> Comments
+                <button className="job-compatibility-btn" onClick={() => handleJobCompatibility(post._id)}>
+                  Job Compatibility
                 </button>
 
                 {/* Options Dropdown */}

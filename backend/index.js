@@ -18,12 +18,12 @@ app.use(cors({
     origin: ["http://localhost:5173"],
     credentials: true
 }));
+
 app.use(cookieParser());
 app.use('/auth', UserRouter);
 app.use('/api/posts', PostRouter);
 app.use("/admin", AdminRouter);
 
-// Get the directory name in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

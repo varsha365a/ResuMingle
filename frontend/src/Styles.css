@@ -201,6 +201,24 @@ button.btn:hover {
     transition: all 0.3s ease-in-out;
 }
 
+.job-compatibility-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .job-compatibility-btn:hover {
+    background-color: #45a049;
+  }
+  
+
 /* General button styling */
 .post-actions button {
     display: flex;
@@ -283,3 +301,145 @@ button.btn:hover {
 .pdf-preview:hover {
     transform: scale(1.02);
 }
+
+/* Member dashboard styles */
+.member-dashboard-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .dashboard-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  .post-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Each Post Card */
+  .post-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 12px 16px;
+    transition: transform 0.2s ease;
+  }
+  
+  .post-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  /* Username at top */
+  .post-header {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  /* PDF Preview */
+  .post-pdf-preview iframe {
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    height: 450px;
+  }
+  
+  /* Buttons */
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+  }
+  
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #444;
+    transition: color 0.2s ease;
+  }
+  
+  /* Responsive */
+  @media screen and (max-width: 600px) {
+    .post-card {
+      padding: 10px;
+    }
+    .post-pdf-preview iframe {
+      height: 120px;
+    }
+  }
+  
+  .post-comment-section {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .comment-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .comment-submit-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .comment-submit-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .comment-list {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  
+  .single-comment {
+    margin-bottom: 4px;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logout-btn {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  
+  .dashboard-section {
+    margin-top: 30px;
+  }
+  
+  .dashboard-section h3 {
+    margin-bottom: 10px;
+    color: #444;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+  }
+  
+  
