@@ -27,7 +27,7 @@ const Login = () => {
       if (response.data.status) {
         console.log("Login successful, Role:", response.data.role);
 
-        if (response.data.role === "member") {
+        if (response.data.role === "user") {
           const postStatusRes = await Axios.get("http://localhost:3000/api/posts/has-posted");
 
           if (postStatusRes.data && postStatusRes.data.hasPosted) {
@@ -39,7 +39,10 @@ const Login = () => {
           }
         } else if (response.data.role === "admin") {
           navigate("/adminDashboard");
-        } else {
+        } else if (response.data.role === "member") {
+          navigate("/memberDashboard");
+        }
+        else {
           // Fallback for any other roles
           navigate("/upload");
         }
